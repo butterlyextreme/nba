@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url:  jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+nba:
+  client:
+    url: https://free-nba.p.rapidapi.com
+    apiKeyHeader: 480f1e37b5mshe1584c5617c89f4p144dacjsn86a1167e4247
+    hostHeader: free-nba.p.rapidapi.com
