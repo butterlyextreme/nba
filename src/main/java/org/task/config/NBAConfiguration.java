@@ -1,10 +1,15 @@
 package org.task.config;
 
+import static com.fasterxml.jackson.databind.AnnotationIntrospector.pair;
+
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.task.jackson.NBADateIntrospector;
 import org.task.service.NBAClient;
 import org.task.service.NBAClientImpl;
 
@@ -23,5 +28,12 @@ public class NBAConfiguration {
   public NBAClient nbaClient(@Qualifier("nbaWebClient") WebClient webClient,
       NBAConfigProperties nbaConfigProperties) {
     return new NBAClientImpl(webClient, nbaConfigProperties);
+  }
+
+  @Bean
+  public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
+    return builder -> builder
+        .annotationIntrospector(
+            pair(new JacksonAnnotationIntrospector(), new NBADateIntrospector()));
   }
 }

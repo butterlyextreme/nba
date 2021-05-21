@@ -12,6 +12,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -47,6 +48,9 @@ public class NABClientAPIImplTest {
   @Autowired
   private ObjectMapper objectMapper;
 
+  @Autowired
+  Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer;
+
   private static WireMockServer wireMockServer;
 
   // @BeforeAll
@@ -72,7 +76,7 @@ public class NABClientAPIImplTest {
 
   @Test
   public void executeGetGameStatsByGameIds() {
-    StepVerifier.create(nbaClientAPI.getGameStats(Arrays.asList(GAME_ID)))
+    StepVerifier.create(nbaClientAPI.getGameStats(GAME_ID,null))
         .assertNext(response -> {
           assertEquals(25, response.getGameStatList().size());
           System.err.println((response.getGameStatList()));

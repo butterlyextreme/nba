@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,7 +34,8 @@ public class GameEntity {
 
   @Id
   private String id;
-  @Column(name = "date", updatable = false)
+  @Temporal(TemporalType.DATE)
+  @Column(name = "date")
   private Date date;
   private String homeName;
   private String visitorName;
@@ -44,7 +47,7 @@ public class GameEntity {
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
   @Builder.Default
-  @OrderBy("creation_time ASC")
+  @OrderBy("creation_time DESC")
   private Set<CommentEntity> commentEntities = new HashSet<>();
 
   @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER, orphanRemoval = true)

@@ -3,6 +3,7 @@ package org.task.service;
 import static reactor.core.publisher.Mono.error;
 
 
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.task.config.NBAConfigProperties;
 import org.task.model.nbaconsumer.NBAGame;
+import org.task.model.nbaconsumer.NBAGamePage;
 import org.task.model.nbaconsumer.NBAGameStatPage;
 import reactor.core.publisher.Mono;
 
@@ -40,15 +42,33 @@ public class NBAClientImpl implements NBAClient {
         .flatMap(response -> response.bodyToMono(NBAGame.class));
   }
 
-  public Mono<NBAGameStatPage> getGameStats(final List<String> gameIds) {
-    log.info("Retrieve stat details for the following game Ids [{}]", gameIds);
+  public Mono<NBAGamePage> getGamesByDate(final Date date) {
+    log.info("Retrieve game details for games on date [{}]", date);
+    return nbaWebClient.get()
+        .uri(uriBuilder -> uriBuilder
+            .path("/games/")
+            .queryParam("date", "{date}")
+            .queryParam("per_page", "{per_page}")
+            .queryParam("page", "{page}")
+            .build(date, "25", "0"))
+        .headers(getAuthorisationHeaders())
+        .accept(MediaType.APPLICATION_JSON)
+        .exchange()
+        .flatMap(response -> handleException(response,
+            "Failed to get Game, HTTPStatus {}"))
+        .flatMap(response -> response.bodyToMono(NBAGamePage.class));
+  }
+
+  public Mono<NBAGameStatPage> getGameStats(final String gameId, final Date date) {
+    log.info("Retrieve stat details for the following game Ids [{}] and date [{}]", gameId, date);
     return nbaWebClient.get()
         .uri(uriBuilder -> uriBuilder
             .path("/stats/")
             //.queryParam("game_ids", "{gameIds}")
+            .queryParam("date", "{date}")
             .queryParam("per_page", "{per_page}")
             .queryParam("page", "{page}")
-            .build( "25", "0"))
+            .build(date, "25", "0"))
         .headers(getAuthorisationHeaders())
         .accept(MediaType.APPLICATION_JSON)
         .exchange()
@@ -57,7 +77,7 @@ public class NBAClientImpl implements NBAClient {
         .flatMap(response -> response.bodyToMono(NBAGameStatPage.class));
   }
 
-  private Consumer<HttpHeaders> getAuthorisationHeaders(){
+  private Consumer<HttpHeaders> getAuthorisationHeaders() {
     return httpHeaders -> {
       httpHeaders.add("x-rapidapi-key", nbaConfigProperties.getApiKeyHeader());
       httpHeaders.add("x-rapidapi-host", nbaConfigProperties.getHostHeader());
