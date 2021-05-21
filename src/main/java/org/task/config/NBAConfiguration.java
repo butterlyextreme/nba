@@ -2,12 +2,15 @@ package org.task.config;
 
 import static com.fasterxml.jackson.databind.AnnotationIntrospector.pair;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import java.util.TimeZone;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.task.jackson.NBADateIntrospector;
 import org.task.service.NBAClient;
@@ -36,4 +39,5 @@ public class NBAConfiguration {
         .annotationIntrospector(
             pair(new JacksonAnnotationIntrospector(), new NBADateIntrospector()));
   }
+
 }

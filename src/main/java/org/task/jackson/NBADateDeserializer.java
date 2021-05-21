@@ -30,11 +30,14 @@ public class NBADateDeserializer extends StdDeserializer<Date> {
 
     try {
       LocalDateTime datetime = LocalDateTime.parse(input, patternOne);
-
-      return Date.from(datetime.atZone(ZoneId.of("UTC")).toInstant());
+      return getDate(datetime);
     } catch (Exception e) {
       LocalDateTime datetime = LocalDateTime.parse(input, patternTwo);
-      return Date.from(datetime.atZone(ZoneId.systemDefault()).toInstant());
+      return getDate(datetime);
     }
+  }
+
+  private Date getDate(LocalDateTime datetime) {
+    return java.sql.Date.valueOf(datetime.toLocalDate());
   }
 }

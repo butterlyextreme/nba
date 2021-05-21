@@ -5,6 +5,7 @@ import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -47,7 +48,7 @@ public class GameServiceImpl implements GameService {
   public Game getGameById(final String id) {
     return gameRepository.findById(id).map(gameEntity -> this.toGame(gameEntity))
         .orElseGet(() -> {
-          log.info("No records found in the DB");
+          log.info("No records found in the DB calling the NBAClient with game ID [{}]", id);
           Game emptyGame = Game.builder().build();
 
           NBAGame nbaGame = nbaClient.getGame(id).block();
@@ -86,9 +87,9 @@ public class GameServiceImpl implements GameService {
       }
 
       NBAGameStatPage gameStatPage = nbaClient.getGameStats(null, date).block();
+
       List<GameEntity> gameEntities = gameRepository
           .saveAll(toGameEntities(nbaGamePage.getGames()));
-
       playerRepository.saveAll(toPlayerEntities(gameStatPage.getGameStatList(), gameEntities));
 
       games = gameEntities.stream()
@@ -102,9 +103,8 @@ public class GameServiceImpl implements GameService {
   public void createComment(String gameId, AddComment comment) {
     log.info("Adding comment to game with ID [{}]", gameId);
     GameEntity gameEntity = gameRepository.findById(gameId).orElseThrow(
-        () ->
-            new EntityNotFoundException(
-                format("Game with id: %s has not been found", gameId)));
+        () -> new EntityNotFoundException(
+            format("Game with id: %s has not been found", gameId)));
 
     gameEntity.getCommentEntities().add(toCommentEntity(comment.getText(), gameEntity));
     log.debug("Successfully added comment to game with ID [{}]", gameId);
@@ -116,22 +116,20 @@ public class GameServiceImpl implements GameService {
     UUID commentUuid = UUID.fromString(comment.getId());
 
     CommentEntity commentEntity = commentRepository.findById(commentUuid).orElseThrow(
-        () ->
-            new EntityNotFoundException(
-                format("Comment with id: %s has not been found", commentUuid)));
+        () -> new EntityNotFoundException(
+            format("Comment with id: %s has not been found", commentUuid)));
 
     commentEntity.setComment(comment.getText());
     log.debug("Successfully update comment for comment ID [{}]", commentUuid);
   }
 
   @Transactional
-  public void deleteComment(String gameId, String commentId){
+  public void deleteComment(String gameId, String commentId) {
     log.info("Deleting comment ID [{}], for Game ID [{}]", commentId, gameId);
     UUID commentUuid = UUID.fromString(commentId);
     CommentEntity commentEntity = commentRepository.findById(commentUuid).orElseThrow(
-        () ->
-            new EntityNotFoundException(
-                format("Comment with id: %s has not been found", commentUuid)));
+        () -> new EntityNotFoundException(
+            format("Comment with id: %s has not been found", commentUuid)));
 
     gameRepository.findById(gameId).ifPresent(gameEntity -> {
       gameEntity.getCommentEntities().remove(commentEntity);
@@ -157,7 +155,7 @@ public class GameServiceImpl implements GameService {
   private GameEntity toGameEntity(NBAGame nbaGame) {
     return GameEntity.builder()
         .id(nbaGame.getId())
-        .date(Date.from(nbaGame.getDate().toInstant()))
+        .date(nbaGame.getDate())
         .homeScore(nbaGame.getHomeScore())
         .homeName(nbaGame.getHomeTeam().getName())
         .visitorName(nbaGame.getVisitorTeam().getName())
@@ -186,8 +184,8 @@ public class GameServiceImpl implements GameService {
     GameEntity gameEntity = gameEntityMap.get(nbaGameStat.getGame().getId());
 
     if (isEmpty(gameEntity)) {
-      log.info(
-          "We couldn't find a corresponding game, there are massive issues in this NBAClientAPI, ignoring");
+      log.info("We couldn't find a corresponding game, there are massive issues in "
+          + "this NBAClientAPI, ignoring");
       return null;
     }
 
@@ -227,7 +225,6 @@ public class GameServiceImpl implements GameService {
         .text(entity.getComment())
         .build();
   }
-
 
   private List<Player> toPlayers(Set<PlayerEntity> playerSet) {
     return playerSet.stream()

@@ -2,12 +2,14 @@ package org.task.model.nbaconsumer;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.task.model.NBADate;
 
 @Data
 @Builder
@@ -15,8 +17,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NBAGame {
   String id;
-  @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd HH:mm:ss z")
-  ZonedDateTime date;
+  @NBADate
+  Date date;
   @JsonProperty("home_team")
   NBATeam homeTeam;
   @JsonProperty("home_team_score")
