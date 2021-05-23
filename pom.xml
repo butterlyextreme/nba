@@ -50,6 +50,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/x
     <version>7.0.1.Final</version>
   </dependency>
   <dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-contract-verifier</artifactId>
+    <version>2.1.1.RELEASE</version>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-test</artifactId>
     <scope>test</scope>
@@ -69,6 +75,22 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/x
 
 <build>
   <plugins>
+    <plugin>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-contract-maven-plugin</artifactId>
+      <version>2.1.1.RELEASE</version>
+      <extensions>true</extensions>
+      <configuration>
+        <basePackageForTests>
+          org.task.controller.contract
+        </basePackageForTests>
+        <baseClassForTests>
+          org.task.controller.contract.GameControllerBase
+        </baseClassForTests>
+        <testFramework>JUNIT5</testFramework>
+        <testMode>EXPLICIT</testMode>
+      </configuration>
+    </plugin>
     <plugin>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-maven-plugin</artifactId>

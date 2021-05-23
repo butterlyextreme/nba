@@ -57,11 +57,8 @@ public class GameServiceImpl implements GameService {
             return emptyGame;
           }
 
-          NBAGameStatPage gameStatPage = nbaClient.getGameStats(id, null).block();
-
-          List<GameEntity> gameEntities = gameRepository
-              .saveAll(toGameEntities(Arrays.asList(nbaGame)));
-          playerRepository.saveAll(toPlayerEntities(gameStatPage.getGameStatList(), gameEntities));
+          NBAGameStatPage gameStatPage = nbaClient.getGameStatsByGameId(id).block();
+          List<GameEntity> gameEntities = getAndSaveGameEntities(gameStatPage, Arrays.asList(nbaGame));
 
           return gameEntities.stream()
               .findAny()
@@ -82,15 +79,12 @@ public class GameServiceImpl implements GameService {
       NBAGamePage nbaGamePage = nbaClient.getGamesByDate(date).block();
 
       if (isEmpty(nbaGamePage.getGames())) {
-        log.info("No gameS returned from the NBAClient for date [{}]", date);
+        log.info("No games returned from the NBAClient for date [{}]", date);
         return emptyList();
       }
 
-      NBAGameStatPage gameStatPage = nbaClient.getGameStats(null, date).block();
-
-      List<GameEntity> gameEntities = gameRepository
-          .saveAll(toGameEntities(nbaGamePage.getGames()));
-      playerRepository.saveAll(toPlayerEntities(gameStatPage.getGameStatList(), gameEntities));
+      NBAGameStatPage gameStatPage = nbaClient.getGameStatsByDate(date).block();
+      List<GameEntity> gameEntities = getAndSaveGameEntities(gameStatPage, nbaGamePage.getGames());
 
       games = gameEntities.stream()
           .map(this::toGame)
@@ -139,20 +133,27 @@ public class GameServiceImpl implements GameService {
     log.debug("Successfully deleted comment, ID [{}]", commentUuid);
   }
 
-  private CommentEntity toCommentEntity(String comment, GameEntity gameEntity) {
+  private List<GameEntity> getAndSaveGameEntities(final NBAGameStatPage gameStatPage, List<NBAGame> games) {
+    List<GameEntity> gameEntities = gameRepository
+        .saveAll(toGameEntities(games));
+    playerRepository.saveAll(toPlayerEntities(gameStatPage.getGameStatList(), gameEntities));
+    return gameEntities;
+  }
+
+  private CommentEntity toCommentEntity(final String comment, final GameEntity gameEntity) {
     return CommentEntity.builder()
         .comment(comment)
         .game(gameEntity)
         .build();
   }
 
-  protected List<GameEntity> toGameEntities(List<NBAGame> nbaGames) {
+  private List<GameEntity> toGameEntities(final List<NBAGame> nbaGames) {
     return nbaGames.stream()
         .map(this::toGameEntity)
         .collect(Collectors.toList());
   }
 
-  private GameEntity toGameEntity(NBAGame nbaGame) {
+  private GameEntity toGameEntity(final NBAGame nbaGame) {
     return GameEntity.builder()
         .id(nbaGame.getId())
         .date(nbaGame.getDate())
@@ -163,7 +164,7 @@ public class GameServiceImpl implements GameService {
         .build();
   }
 
-  protected List<PlayerEntity> toPlayerEntities(List<NBAStat> stats,
+  private List<PlayerEntity> toPlayerEntities(final List<NBAStat> stats,
       List<GameEntity> gameEntities) {
 
     //Create a map for easy referencing

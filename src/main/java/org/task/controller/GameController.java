@@ -65,7 +65,7 @@ public class GameController {
   public ResponseEntity<Void> updateComment(
       @PathVariable final String id, @PathVariable final String commentId) {
     gameService.deleteComment(id, commentId);
-    return new ResponseEntity<>(HttpStatus.OK);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
 

@@ -2,9 +2,7 @@ package org.task.service;
 
 import static reactor.core.publisher.Mono.error;
 
-
 import java.util.Date;
-import java.util.List;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,10 +34,9 @@ public class NBAClientImpl implements NBAClient {
             .build(gameId))
         .headers(getAuthorisationHeaders())
         .accept(MediaType.APPLICATION_JSON)
-        .exchange()
-        .flatMap(response -> handleException(response,
-            "Failed to get Game, HTTPStatus {}"))
-        .flatMap(response -> response.bodyToMono(NBAGame.class));
+        .exchangeToMono(response ->
+            handleException(response, "Failed to get Game, HTTPStatus {}")
+                .flatMap(responseOk -> responseOk.bodyToMono(NBAGame.class)));
   }
 
   public Mono<NBAGamePage> getGamesByDate(final Date date) {
@@ -53,28 +50,35 @@ public class NBAClientImpl implements NBAClient {
             .build(date, "25", "0"))
         .headers(getAuthorisationHeaders())
         .accept(MediaType.APPLICATION_JSON)
-        .exchange()
-        .flatMap(response -> handleException(response,
-            "Failed to get Game, HTTPStatus {}"))
-        .flatMap(response -> response.bodyToMono(NBAGamePage.class));
+        .exchangeToMono(response ->
+            handleException(response, "Failed to get Games, HTTPStatus {}")
+                .flatMap(responseOk -> responseOk.bodyToMono(NBAGamePage.class)));
   }
 
-  public Mono<NBAGameStatPage> getGameStats(final String gameId, final Date date) {
+
+  public Mono<NBAGameStatPage> getGameStatsByGameId(final String gameId) {
+    return getGameStats(gameId, null);
+  }
+
+  public Mono<NBAGameStatPage> getGameStatsByDate(final Date date) {
+    return getGameStats(null, date);
+  }
+
+  protected Mono<NBAGameStatPage> getGameStats(final String gameId, final Date date) {
     log.info("Retrieve stat details for the following game Ids [{}] and date [{}]", gameId, date);
     return nbaWebClient.get()
         .uri(uriBuilder -> uriBuilder
             .path("/stats/")
-            //.queryParam("game_ids", "{gameIds}")
+            .queryParam("game_ids", "{gameIds}")
             .queryParam("date", "{date}")
             .queryParam("per_page", "{per_page}")
             .queryParam("page", "{page}")
-            .build(date, "25", "0"))
+            .build(gameId, date, "25", "0"))
         .headers(getAuthorisationHeaders())
         .accept(MediaType.APPLICATION_JSON)
-        .exchange()
-        .flatMap(response -> handleException(response,
-            "Failed to get Game, HTTPStatus {}"))
-        .flatMap(response -> response.bodyToMono(NBAGameStatPage.class));
+        .exchangeToMono(response ->
+            handleException(response, "Failed to get GameStats, HTTPStatus {}")
+                .flatMap(responseOk -> responseOk.bodyToMono(NBAGameStatPage.class)));
   }
 
   private Consumer<HttpHeaders> getAuthorisationHeaders() {

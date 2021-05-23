@@ -7,9 +7,12 @@ import org.task.model.nbaconsumer.NBAGameStatPage;
 import reactor.core.publisher.Mono;
 
 public interface NBAClient {
-   Mono<NBAGame> getGame(final String gameId);
 
-   Mono<NBAGamePage> getGamesByDate(final Date date);
+  Mono<NBAGame> getGame(final String gameId);
 
-   Mono<NBAGameStatPage> getGameStats(final String gameId, final Date date);
+  Mono<NBAGamePage> getGamesByDate(final Date date);
+
+  Mono<NBAGameStatPage> getGameStatsByGameId(final String gameId);
+
+  Mono<NBAGameStatPage> getGameStatsByDate(final Date date);
 }

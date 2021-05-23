@@ -9,10 +9,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-/**
- * Deserializer, which is normalising provided IBAN (removing spaces and converting it to upper
- * case).
- */
 public class NBADateDeserializer extends StdDeserializer<Date> {
 
   public NBADateDeserializer() {

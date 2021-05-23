@@ -12,13 +12,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.task.jackson.NBADateIntrospector;
 import org.task.service.NBAClient;
 import org.task.service.NBAClientImpl;
 
 @Configuration
 @RequiredArgsConstructor
-public class NBAConfiguration {
+public class NBAConfiguration  {
 
   private final NBAConfigProperties nbaConfigProperties;
 
