@@ -30,8 +30,6 @@ import org.task.service.GameService;
 @RequiredArgsConstructor
 @Slf4j
 public class GameController {
-
-
   private final GameService gameService;
 
   @GetMapping(value = "/game/{id}")
@@ -67,6 +65,4 @@ public class GameController {
     gameService.deleteComment(id, commentId);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
-
-
 }

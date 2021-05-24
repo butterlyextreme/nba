@@ -149,7 +149,7 @@ public class GameServiceImpl implements GameService {
         .build();
   }
 
-  private List<GameEntity> toGameEntities(final List<NBAGame> nbaGames) {
+  protected List<GameEntity> toGameEntities(final List<NBAGame> nbaGames) {
     return nbaGames.stream()
         .map(this::toGameEntity)
         .collect(Collectors.toList());
@@ -166,7 +166,7 @@ public class GameServiceImpl implements GameService {
         .build();
   }
 
-  private List<PlayerEntity> toPlayerEntities(final List<NBAStat> stats,
+  protected List<PlayerEntity> toPlayerEntities(final List<NBAStat> stats,
       List<GameEntity> gameEntities) {
 
     //Create a map for easy referencing
@@ -187,7 +187,7 @@ public class GameServiceImpl implements GameService {
     GameEntity gameEntity = gameEntityMap.get(nbaGameStat.getGame().getId());
 
     if (isEmpty(gameEntity)) {
-      log.info("We couldn't find a corresponding game, there are massive issues in "
+      log.info("We couldn't find a corresponding game, there are massive issues with "
           + "this NBAClientAPI, ignoring");
       return null;
     }
