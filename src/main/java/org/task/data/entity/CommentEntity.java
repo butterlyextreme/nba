@@ -43,6 +43,10 @@ public class CommentEntity {
   @Column(name = "creation_time", updatable = false)
   private Date creationTime;
 
+  @UpdateTimestamp
+  @Column(name = "modified_time")
+  private Date modifiedTime;
+
   @ManyToOne
   @JoinColumn(name= "game_id", referencedColumnName = "id", nullable = false)
   private GameEntity game;

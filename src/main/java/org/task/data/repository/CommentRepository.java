@@ -6,5 +6,4 @@ import org.task.data.entity.CommentEntity;
 
 public interface CommentRepository extends JpaRepository<CommentEntity, UUID> {
 
-  void deleteByIdAndGameId(UUID id, String gameId);
 }
