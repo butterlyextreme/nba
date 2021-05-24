@@ -56,7 +56,6 @@ public class GameRepositoryComponentTest {
     public void testRetrieveCommentsInOrder() {
       createAndPersistGameEntity();
       GameEntity gameEntity = gameRepository.findById(GAME_ID).orElse(null);
-      createCommentEntity("commentOne", gameEntity);
 
       gameEntity.getCommentEntities().add(createCommentEntity("commentOne", gameEntity));
       testEntityManager.persistAndFlush(gameEntity);
@@ -65,7 +64,7 @@ public class GameRepositoryComponentTest {
       testEntityManager.persistAndFlush(gameEntity);
 
       gameEntity = gameRepository.findById(GAME_ID).orElse(null);
-      assertEquals("commentTwo", gameEntity.getCommentEntities());
+      assertEquals("commentTwo", gameEntity.getCommentEntities().stream().findFirst().get().getComment());
   }
 
 

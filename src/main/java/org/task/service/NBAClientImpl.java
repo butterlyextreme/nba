@@ -55,7 +55,6 @@ public class NBAClientImpl implements NBAClient {
                 .flatMap(responseOk -> responseOk.bodyToMono(NBAGamePage.class)));
   }
 
-
   public Mono<NBAGameStatPage> getGameStatsByGameId(final String gameId) {
     return getGameStats(gameId, null);
   }

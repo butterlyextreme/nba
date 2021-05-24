@@ -8,6 +8,9 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +26,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.task.config.NBAConfigProperties;
 import org.task.config.NBAConfiguration;
+import org.task.model.nbaconsumer.NBAGame;
+import org.task.model.nbaconsumer.NBAGameStatPage;
 import reactor.test.StepVerifier;
 
 @EnableConfigurationProperties({NBAConfigProperties.class})
@@ -35,7 +40,7 @@ import reactor.test.StepVerifier;
 @TestPropertySource(
     properties = {"spring.main.banner-mode=off",
         "logging.level.reactor.netty.http.client=DEBUG",
-        "nba.client.url=https://free-nba.p.rapidapi.com",
+        "nba.client.url=http://localhost:7005/",
         "nba.client.apiKeyHeader=480f1e37b5mshe1584c5617c89f4p144dacjsn86a1167e4247",
         "nba.client.hostHeader=free-nba.p.rapidapi.com"})
 public class NABClientAPIImplTest {
@@ -53,34 +58,25 @@ public class NABClientAPIImplTest {
 
   private static WireMockServer wireMockServer;
 
-  // @BeforeAll
+  @BeforeAll
   static void startWireMock() {
     wireMockServer = new WireMockServer(
         options().port(7005).withRootDirectory("src/test/resources/wiremock"));
     wireMockServer.start();
   }
 
-  //@AfterAll
+  @AfterAll
   static void stopWireMock() {
     wireMockServer.stop();
   }
 
   @Test
-  @Disabled
-  public void executeGetGameById() {
-    StepVerifier.create(nbaClientAPI.getGame(GAME_ID))
-        .assertNext(response -> {
-          assertEquals(GAME_ID, response.getId());
-        })
-        .verifyComplete();
-  }
-
-  @Test
-  public void executeGetGameStatsByGameIds() {
+  public void executeGetGameStatsByGameIds() throws Exception {
+    NBAGameStatPage nbaGameStatPage = deserialize(readMockJson("game_stats.json"),
+        NBAGameStatPage.class);
     StepVerifier.create(nbaClientAPI.getGameStatsByGameId(GAME_ID))
         .assertNext(response -> {
-          assertEquals(25, response.getGameStatList().size());
-          System.err.println((response.getGameStatList()));
+          assertEquals(nbaGameStatPage, response);
         })
         .verifyComplete();
   }
@@ -90,9 +86,6 @@ public class NABClientAPIImplTest {
         NABClientAPIImplTest.class.getResource("/wiremock/__files/" + name).toURI())));
   }
 
-  /**
-   * Deserializes json to the given class, using default ObjectMapper from jackson.
-   */
   <T> T deserialize(final String content, final Class<T> valueType) {
     try {
       return objectMapper.readValue(content, valueType);

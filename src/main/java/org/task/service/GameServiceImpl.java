@@ -58,7 +58,8 @@ public class GameServiceImpl implements GameService {
           }
 
           NBAGameStatPage gameStatPage = nbaClient.getGameStatsByGameId(id).block();
-          List<GameEntity> gameEntities = getAndSaveGameEntities(gameStatPage, Arrays.asList(nbaGame));
+          List<GameEntity> gameEntities = getAndSaveGameEntities(gameStatPage,
+              Arrays.asList(nbaGame));
 
           return gameEntities.stream()
               .findAny()
@@ -133,7 +134,8 @@ public class GameServiceImpl implements GameService {
     log.debug("Successfully deleted comment, ID [{}]", commentUuid);
   }
 
-  private List<GameEntity> getAndSaveGameEntities(final NBAGameStatPage gameStatPage, List<NBAGame> games) {
+  private List<GameEntity> getAndSaveGameEntities(final NBAGameStatPage gameStatPage,
+      List<NBAGame> games) {
     List<GameEntity> gameEntities = gameRepository
         .saveAll(toGameEntities(games));
     playerRepository.saveAll(toPlayerEntities(gameStatPage.getGameStatList(), gameEntities));

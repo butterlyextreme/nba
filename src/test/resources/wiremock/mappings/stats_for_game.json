@@ -1,0 +1,28 @@
+{
+  "id" : "ec96fc43-e72b-43de-8f15-bae7cb38edd0",
+  "name" : "stats",
+  "request" : {
+    "url" : "/stats/?game_ids=45237&date=&per_page=25&page=0",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName": "game_stats.json",
+    "headers" : {
+      "Cache-Control" : "max-age=0, private, must-revalidate",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Date" : "Mon, 24 May 2021 10:47:42 GMT",
+      "Etag" : "W/\"e4aa159e1dd32072e09609472bf9bbf7\"",
+      "Server" : "RapidAPI-1.2.8",
+      "Vary" : "Origin",
+      "Via" : "1.1 vegur",
+      "X-RapidAPI-Region" : "AWS - eu-central-1",
+      "X-RapidAPI-Version" : "1.2.8",
+      "X-Request-Id" : "c9226e44-386e-4de8-a387-37b205363482",
+      "X-Runtime" : "0.559785"
+    }
+  },
+  "uuid" : "ec96fc43-e72b-43de-8f15-bae7cb38edd0",
+  "persistent" : true,
+  "insertionIndex" : 22
+}
