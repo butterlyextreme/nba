@@ -1,10 +1,8 @@
 package org.task.data.entity;
 
-import java.time.Instant;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -56,10 +54,5 @@ public class GameEntity {
   @EqualsAndHashCode.Exclude
   @Builder.Default
   private Set<PlayerEntity> playerEntities = new HashSet<>();
-
-  public void removeComment(CommentEntity commentEntity) {
-    commentEntities.remove(commentEntity);
-  }
-
 
 }

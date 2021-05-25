@@ -8,14 +8,11 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -26,7 +23,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.task.config.NBAConfigProperties;
 import org.task.config.NBAConfiguration;
-import org.task.model.nbaconsumer.NBAGame;
 import org.task.model.nbaconsumer.NBAGameStatPage;
 import reactor.test.StepVerifier;
 
@@ -35,8 +31,7 @@ import reactor.test.StepVerifier;
 @SpringBootTest(classes = {NBAClient.class})
 @ContextConfiguration(
     classes = {NBAConfiguration.class, JacksonAutoConfiguration.class,
-        WebClientAutoConfiguration.class},
-    initializers = ConfigFileApplicationContextInitializer.class)
+        WebClientAutoConfiguration.class})
 @TestPropertySource(
     properties = {"spring.main.banner-mode=off",
         "logging.level.reactor.netty.http.client=DEBUG",
@@ -52,9 +47,6 @@ public class NABClientAPIImplTest {
 
   @Autowired
   private ObjectMapper objectMapper;
-
-  @Autowired
-  Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer;
 
   private static WireMockServer wireMockServer;
 
@@ -75,9 +67,7 @@ public class NABClientAPIImplTest {
     NBAGameStatPage nbaGameStatPage = deserialize(readMockJson("game_stats.json"),
         NBAGameStatPage.class);
     StepVerifier.create(nbaClientAPI.getGameStatsByGameId(GAME_ID))
-        .assertNext(response -> {
-          assertEquals(nbaGameStatPage, response);
-        })
+        .assertNext(response -> assertEquals(nbaGameStatPage, response))
         .verifyComplete();
   }
 

@@ -3,9 +3,9 @@ package org.task.service;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
-import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -46,7 +46,7 @@ public class GameServiceImpl implements GameService {
 
   @Transactional
   public Game getGameById(final String id) {
-    return gameRepository.findById(id).map(gameEntity -> this.toGame(gameEntity))
+    return gameRepository.findById(id).map(this::toGame)
         .orElseGet(() -> {
           log.info("No records found in the DB calling the NBAClient with game ID [{}]", id);
           Game emptyGame = Game.builder().build();
@@ -59,7 +59,7 @@ public class GameServiceImpl implements GameService {
 
           NBAGameStatPage gameStatPage = nbaClient.getGameStatsByGameId(id).block();
           List<GameEntity> gameEntities = getAndSaveGameEntities(gameStatPage,
-              Arrays.asList(nbaGame));
+              singletonList(nbaGame));
 
           return gameEntities.stream()
               .findAny()
@@ -241,5 +241,4 @@ public class GameServiceImpl implements GameService {
         .score(entity.getScore())
         .build();
   }
-
 }

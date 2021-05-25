@@ -92,12 +92,11 @@ public class NBAClientImpl implements NBAClient {
       final String errorMessage) {
     final HttpStatus status = response.statusCode();
     if (!status.is2xxSuccessful()) {
-      log.debug(errorMessage,
-          response.statusCode());
+      log.debug(errorMessage, response.statusCode());
       return response.bodyToMono(String.class)
           .flatMap(
               e -> error(
-                  new Exception("Unable ")));
+                  new Exception("Exception calling the NBARapidAPI")));
     } else {
       return Mono.just(response);
     }
