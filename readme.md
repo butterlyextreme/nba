@@ -23,8 +23,3 @@ I only provided samples of what I would normally use more extensively for the di
 
 >Lacking entirely are Integration tests.
 
-
-## Points of Confusion
-- The task specifies the aggregation of player scores as a calculated total. I was not sure what was implied here as the scores coming from the API are already totaled per player per game and the total scores are also already provisioned. 
-
-- Ordered comments are a strange requirement insofar as JSON is concerned as I would assume that as long as I added the created timestamp the consumer would be able to order itself.
