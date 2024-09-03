@@ -37,8 +37,6 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         HttpStatus.NOT_FOUND, request);
   }
 
-
-  @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
       HttpHeaders headers, HttpStatus status, WebRequest request) {
     String errors = ex.getBindingResult().getFieldErrors().stream()
@@ -47,8 +45,6 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     log.error("Request to '{}' finished with error: {}", extractPath(request), errors);
     return handleExceptionInternal(ex, null, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
   }
-
-  @Override
   protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
       HttpHeaders headers, HttpStatus status, WebRequest request) {
     log.error("Request to '{}' finished with error: {}", extractPath(request), ex.getMessage());

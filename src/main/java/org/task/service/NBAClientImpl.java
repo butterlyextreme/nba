@@ -90,7 +90,7 @@ public class NBAClientImpl implements NBAClient {
 
   private static Mono<ClientResponse> handleException(final ClientResponse response,
       final String errorMessage) {
-    final HttpStatus status = response.statusCode();
+    final HttpStatus status = (HttpStatus) response.statusCode();
     if (!status.is2xxSuccessful()) {
       log.debug(errorMessage, response.statusCode());
       return response.bodyToMono(String.class)
